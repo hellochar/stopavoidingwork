@@ -1,0 +1,56 @@
+$text-color: #323436;
+
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image: url('/400-90-5.png');
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 24px;
+  color: $text-color;
+
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+#app {
+  border-radius: 4px;
+  transition: all 0.2s;
+  overflow: visible;
+  animation: fadeIn 1s both;
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+.intro {
+  margin: 0;
+  padding-top: 25%;
+  text-align: center;
+}
+
+.divider-intro {
+  // background-image: url('https://images.pexels.com/photos/547115/pexels-photo-547115.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=935&w=1920');
+  background-image: url('https://images.pexels.com/photos/301614/pexels-photo-301614.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=935&w=1920');
+  background-size: cover;
+}
+
+.entry {
+  min-width: 120px;
+  display: inline-block;
+  border: none;
+  border-bottom: 2px solid $text-color;
+  background: transparent;
+  color: $text-color;
+  font-family: Helvetica;
+  font-size: 1em;
+}
+
+.divider {
+  height: 100vh;
+}
