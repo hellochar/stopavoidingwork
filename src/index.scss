@@ -21,33 +21,111 @@ code {
   border-radius: 4px;
   transition: all 0.2s;
   overflow: visible;
-  animation: fadeIn 1s both;
-  @keyframes fadeIn {
+}
+
+.intro {
+  margin: 0;
+  padding-top: 20%;
+  text-align: center;
+}
+
+.divider-intro {
+  position: relative;
+
+  &:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+
+    // background-image: url('https://images.pexels.com/photos/547115/pexels-photo-547115.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=935&w=1920');
+    // background-image: url('https://images.pexels.com/photos/301614/pexels-photo-301614.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=935&w=1920');
+    background-image: url('https://images.pexels.com/photos/395198/pexels-photo-395198.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=935&w=1920');
+    background-size: cover;
+
+    animation: fadeIn 2s 4s both;
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  }
+}
+
+.divider-what {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .period {
+    animation: comeIn 0s 4s step-end both;
+    @keyframes comeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  }
+}
+
+#putting-off {
+  animation: expandOut 1s 2.5s ease-out both;
+  @keyframes expandOut {
+    from { min-width: 0; }
+    to { min-width: 120px; }
+  }
+}
+
+.enter-listener {
+  position: absolute;
+  bottom: 300px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 1em;
+  font-family: sans-serif;
+  font-size: 12px;
+
+  .enter-listener-key {
+    padding: 5px 20px;
+    border: 1px solid $text-color;
+    border-radius: 4px;
+  }
+
+  animation: flash 1s infinite alternate-reverse both;
+  animation-delay: 5s;
+  @keyframes flash {
     from { opacity: 0; }
     to { opacity: 1; }
   }
 }
 
-.intro {
-  margin: 0;
-  padding-top: 25%;
-  text-align: center;
-}
+.typewriter-text {
+  position: relative;
+  &.typing:after {
+    content: "";
+    border-left: 1px solid $text-color;
+    position: absolute;
+    right: 0;
+    height: 1em;
+    top: 0.25em;
 
-.divider-intro {
-  // background-image: url('https://images.pexels.com/photos/547115/pexels-photo-547115.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=935&w=1920');
-  background-image: url('https://images.pexels.com/photos/301614/pexels-photo-301614.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=935&w=1920');
-  background-size: cover;
+    animation: blinkTextCursor 500ms steps(2) infinite;
+    @keyframes blinkTextCursor {
+      from { opacity: 0.2; }
+      to { opacity: 1; }
+    }
+  }
 }
 
 .entry {
   min-width: 120px;
   display: inline-block;
   border: none;
+  margin-top: 2px;
   border-bottom: 2px solid $text-color;
   background: transparent;
   color: $text-color;
-  font-family: Helvetica;
+  // font-family: Helvetica;
   font-size: 1em;
 }
 
