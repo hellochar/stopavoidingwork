@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
-import styles from './App.module.scss';
-import * as ScrollMagic from 'scrollmagic';
 import classnames from 'classnames';
+import { scrollToPage, isPageActive } from './page';
 
-class TypewriterText extends PureComponent<{duration: number, children: string} & React.HTMLProps<HTMLDivElement>, {}> {
+class TypewriterText extends PureComponent<{duration: number, children: string} & React.HTMLProps<HTMLSpanElement>, {}> {
   state = {
     currentText: ""
   };
@@ -36,28 +35,18 @@ class TypewriterText extends PureComponent<{duration: number, children: string} 
   render() {
     const className = classnames(this.props.className, "typewriter-text", { typing: this.isTyping() });
     return (
-      <div {...this.props} className={className}>
+      <span {...this.props} className={className}>
         {this.state.currentText}
-      </div>
+      </span>
     );
   }
 }
 
-class EnterListener extends PureComponent<{to: number}, {}> {
+class EnterListener extends PureComponent<{page: number, to: number} & React.HTMLProps<HTMLDivElement>, {}> {
+  state = { scrollY: window.scrollY };
   private ref: HTMLDivElement | null = null;
-  private page = 0;
-  componentDidMount() {
-    document.addEventListener("keydown", this.handleKeyDown);   
-  }
-
   handleRef = (ref: HTMLDivElement | null) => {
     this.ref = ref;
-    if (ref != null) {
-      this.page = Math.floor(ref.offsetTop / window.innerHeight);
-      if (this.page < 0) {
-         debugger;
-      }
-    }
   }
 
   handleKeyDown = (evt: KeyboardEvent) => {
@@ -66,50 +55,84 @@ class EnterListener extends PureComponent<{to: number}, {}> {
     }
 
     if (evt.key === 'Enter') {
-      const top = window.innerHeight * this.props.to;
-      window.scrollTo({
-        behavior: "smooth",
-        left: 0,
-        top: top,
-      });
+      scrollToPage(this.props.to);
     }
   }
 
+  handleClick = (evt: React.MouseEvent) => {
+    scrollToPage(this.props.to);
+  }
+
+  handleScroll = (evt: UIEvent) => {
+    this.setState({ scrollY: window.scrollY });
+  }
+
   isActive() {
-    return Math.floor(window.scrollY / window.innerHeight) === this.page;
+    return isPageActive(this.props.page);
+  }
+
+  componentDidMount() {
+    document.addEventListener("keydown", this.handleKeyDown);   
+    window.addEventListener("scroll", this.handleScroll);
   }
 
   componentWillUnmount() {
     document.removeEventListener("keydown", this.handleKeyDown);
+    window.addEventListener("scroll", this.handleScroll);
   }
 
   render() {
     return (
-      <div className="enter-listener" ref={this.handleRef}>
+      <div
+          {...this.props}
+          className={classnames("enter-listener", {"active": this.isActive()})}
+          ref={this.handleRef}
+          onClick={this.handleClick}
+      >
         <span className="enter-listener-key">⮠ &nbsp;Enter</span> Continue
       </div>
     )
   }
 }
 
-class Divider extends React.Component<{className: string}, {}> {
-  state = {
-    loaded: false,
-  }
-  handleScroll = (evt: UIEvent) => {
-    if (this.page) {
-      const currentPage = Math.floor(window.scrollY / window.innerHeight);
-      if (currentPage >= this.page) {
-        this.setState({ loaded: true });
-        window.removeEventListener("scroll", this.handleScroll);
-      }
+class Divider extends React.Component<{className?: string, page: number}, {isLoaded: boolean, isActive: boolean}> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      isLoaded: this.shouldLoad(),
+      isActive: isPageActive(this.props.page),
     }
   }
 
-  private page?: number;
-  handleRef = (ref: HTMLDivElement | null) => {
-    if (ref != null) {
-      this.page = Math.floor(ref.offsetTop / window.innerHeight);
+  shouldLoad() {
+    return window.scrollY / window.innerHeight > this.props.page - 0.05;
+  }
+
+  handleScroll = (evt: UIEvent) => {
+    if (this.shouldLoad() && !this.state.isLoaded) {
+      this.setState({ isLoaded: true });
+    }
+    this.setState({
+      isActive: isPageActive(this.props.page),
+    });
+  }
+  private dividerRef: HTMLDivElement | null = null;
+  
+  handleDividerRef = (ref: HTMLDivElement | null) => {
+    this.dividerRef = ref;
+  }
+
+  handleClick = (evt: React.MouseEvent) => {
+    if (this.dividerRef != null && evt.target === this.dividerRef) {
+      const inputs = Array.from(this.dividerRef.querySelectorAll("input").values());
+      inputs[0] && inputs[0].focus();
+      // for (const inputElement of inputs) {
+      //   // find first empty input
+      //   if (inputElement.value.length === 0) {
+          
+      //     break;
+      //   }
+      // }
     }
   }
 
@@ -120,66 +143,108 @@ class Divider extends React.Component<{className: string}, {}> {
     window.removeEventListener("scroll", this.handleScroll);
   }
   render() {
+    const classNames = classnames(
+      "divider",
+      this.props.className,
+      {
+        "active": this.state.isActive,
+        "passed": !this.state.isActive && this.shouldLoad()
+     });
     return (
-      <div ref={this.handleRef} className={classnames("divider", this.props.className)}>
-        { this.state.loaded ? this.props.children : null }
+      <div ref={this.handleDividerRef} className={classNames} onClick={this.handleClick}>
+        { this.state.isLoaded ? this.props.children : null }
       </div>
     );
   }
 }
 
-class App extends PureComponent {
-
-  handleIntroRef = (ref: HTMLDivElement | null) => {
+class Entry extends PureComponent<{ focusDelay: number | false, onEntry?: (value: string) => void } & React.HTMLProps<HTMLSpanElement>, {}> {
+  private ref: HTMLSpanElement | null = null;
+  handleRef = (ref: HTMLSpanElement | null) => {
+    this.ref = ref;
     if (ref != null) {
-      const controller = new ScrollMagic.Controller();
-
-      // // create a scene
-      // const scene = new ScrollMagic.Scene({
-      //   duration: 1000,	// the scene should last for a scroll distance of 100px
-      //   offset: 0	// start this scene after scrolling for 50px
-      // }).setPin(ref); // pins the element for the the scene's duration
-      
-      // controller.addScene(scene);
-
-      // console.log(controller);
-      // console.log(scene);
+      if (typeof this.props.focusDelay === "number") {
+        setTimeout(() => {
+          ref.focus();
+        },
+        this.props.focusDelay);
+      }
     }
   }
+
+  handleKeyPress = (e: React.KeyboardEvent<HTMLSpanElement>) => {
+    if ((e.key === 'Enter' || e.key === 'Tab') && this.props.onEntry) {
+      e.preventDefault();
+      this.props.onEntry(this.ref && this.ref.innerText || "");
+    }
+  }
+
+  render() {
+    return (
+      <span
+          {...this.props}
+          contentEditable={true}
+          className={classnames("entry", this.props.className)}
+          onKeyPress={this.handleKeyPress}
+          ref={this.handleRef}
+      />
+    );
+  }
+}
+
+interface IAppState {
+  what?: string;
+}
+
+class App extends PureComponent<{}, IAppState> {
+  state = {
+    what: undefined
+  };
+
+  handleEntryWhat = (what: string) => {
+    this.setState({ what });
+    scrollToPage(2);
+  }
+
   render() {
     return (
       <div id="app">
-        <form className="form">
-          <div className='divider divider-intro' ref={this.handleIntroRef}>
-            <TypewriterText duration={4.5} className="intro">
-              Use this five minute motivational exercise to get excited about doing that thing you've been putting off!
-            </TypewriterText>
+        <div className="form">
+          <div className="divider divider-intro">
+            <div className="content">
+              <TypewriterText duration={4.5} className="intro">
+                Use this five minute motivational exercise to get excited about doing that thing you've been putting off!
+              </TypewriterText>
 
-            <EnterListener to={1} />
+              <div style={{
+                marginTop: "2em"
+              }}>
+                <EnterListener page={0} to={1} />
+              </div>
+            </div>
           </div>
 
-          <Divider className="divider-what">
-            <TypewriterText duration={2}>I&nbsp;have&nbsp;been&nbsp;putting&nbsp;off&nbsp;</TypewriterText>
-            <div className="entry" contentEditable={true} id="putting-off" ref={(r) => {
-              if (r != null) {
-                setTimeout(() => {
-                  r.focus();
-                }, 2000);
-              }
-            }}></div>
-            <span className="period">.</span>
+          <Divider className="divider-what" page={1}>
+            <div className="content">
+              <TypewriterText duration={2}>I&nbsp;have&nbsp;been&nbsp;putting&nbsp;off&nbsp;</TypewriterText>
+              <Entry focusDelay={2000} id="what" onEntry={this.handleEntryWhat} />
+              <span className="period">.</span>
+              <EnterListener style={{marginTop: "2em"}} page={1} to={2} />
+            </div>
           </Divider>
-
-          <div className="divider">
-            <label htmlFor="why-not-yet">I haven't done this yet because</label>
-            <ol>
-              <li><div className="entry" contentEditable={true} id="why-not-yet"></div>,</li>
-              <li><div className="entry" contentEditable={true} id="why-not-yet"></div>,</li>
-              <li><div className="entry" contentEditable={true} id="why-not-yet"></div>,</li>
-              <li><div className="entry" contentEditable={true} id="why-not-yet"></div>, and</li>
-              <li><div className="entry" contentEditable={true} id="why-not-yet"></div>.</li>
-            </ol>
-          </div>
+          
+          <Divider page={2}>
+            <div className="content">
+              <TypewriterText duration={2}>I&nbsp;haven't&nbsp;done&nbsp;this&nbsp;yet&nbsp;because</TypewriterText>
+              <ol>
+                <li><div className="entry" contentEditable={true} id="why-not-yet"></div>,</li>
+                <li><div className="entry" contentEditable={true} id="why-not-yet"></div>,</li>
+                <li><div className="entry" contentEditable={true} id="why-not-yet"></div>,</li>
+                <li><div className="entry" contentEditable={true} id="why-not-yet"></div>, and</li>
+                <li><div className="entry" contentEditable={true} id="why-not-yet"></div>.</li>
+              </ol>
+            </div>
+          </Divider>
 
           <div className="divider">
             In the past, doing this has been painful because
@@ -215,7 +280,7 @@ class App extends PureComponent {
               <li><div className="entry" contentEditable={true} id="past-painful"></div>.</li>
             </ol>
           </div>
-        </form>
+        </div>
 
       </div>
     );
