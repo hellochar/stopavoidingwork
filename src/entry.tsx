@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
 import classnames from 'classnames';
 export class Entry extends PureComponent<{
-  focusDelay: number | false;
-  onEntry?: (value: string) => void;
+  focusDelay?: number;
+  onEntry?: (value: string, element: Entry) => void;
+  index?: number;
 } & React.HTMLProps<HTMLSpanElement>, {}> {
   private ref: HTMLSpanElement | null = null;
   handleRef = (ref: HTMLSpanElement | null) => {
@@ -18,7 +19,7 @@ export class Entry extends PureComponent<{
   handleKeyPress = (e: React.KeyboardEvent<HTMLSpanElement>) => {
     if ((e.key === 'Enter' || e.key === 'Tab') && this.props.onEntry) {
       e.preventDefault();
-      this.props.onEntry(this.ref && this.ref.innerText || "");
+      this.props.onEntry(this.ref && this.ref.innerText || "", this);
     }
   };
   render() {

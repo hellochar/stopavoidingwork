@@ -5,6 +5,7 @@ import { isPageActive } from './page';
 export class Divider extends React.Component<{
   className?: string;
   page: number;
+  visible?: boolean;
 }, {
   isLoaded: boolean;
   isActive: boolean;
@@ -52,10 +53,13 @@ export class Divider extends React.Component<{
   render() {
     const classNames = classnames("divider", this.props.className, {
       "active": this.state.isActive,
-      "passed": !this.state.isActive && this.shouldLoad()
+      "passed": !this.state.isActive && this.shouldLoad(),
+      "visible": this.props.visible
     });
-    return (<div ref={this.handleDividerRef} className={classNames} onClick={this.handleClick}>
-      {this.state.isLoaded ? this.props.children : null}
-    </div>);
+    return (
+      <div ref={this.handleDividerRef} className={classNames} onClick={this.handleClick}>
+        {this.props.children}
+      </div>
+    );
   }
 }

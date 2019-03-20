@@ -1,13 +1,15 @@
-$text-color: #323436;
+$text-color: white;
 
 body {
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: url('/400-90-5.png');
-  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
-  font-size: 24px;
+  // background-image: url('/400-90-5.png');
+  background: #20262e;
+  // font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
   color: $text-color;
 
 }
@@ -26,45 +28,15 @@ code {
 .intro {
   display: inline-block;
   margin: 0;
-  padding-top: 25vh;
   max-width: 370px;
 }
 
-.content {
-  margin-right: 400px;
-  margin-left: 400px;
-  height: 100%;
-}
-
-.divider-intro {
-  &:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: -1;
-
-    // background-image: url('https://images.pexels.com/photos/547115/pexels-photo-547115.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=935&w=1920');
-    // background-image: url('https://images.pexels.com/photos/301614/pexels-photo-301614.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=935&w=1920');
-    // background-image: url('https://images.pexels.com/photos/395198/pexels-photo-395198.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=935&w=1920');
-    // background-image: url('https://images.pexels.com/photos/262367/pexels-photo-262367.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1920');
-    background:
-      linear-gradient(rgba(255,255,255,1.0), rgba(255,255,255,0.0)),
-      url("https://images.pexels.com/photos/262367/pexels-photo-262367.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1920");
-    background-size: cover;
-
-    animation: fadeIn 2s 4s both;
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-  }
+.form {
+  margin: 20px;
 }
 
 #what {
-  animation: expandOut 1s 2.5s ease-out both;
+  animation: expandOut 1s 0.5s ease-out both;
   @keyframes expandOut {
     from { min-width: 0; }
     to { min-width: 120px; }
@@ -135,7 +107,17 @@ code {
 
 .divider {
   position: relative;
-  height: 100vh;
+  margin: 20px auto;
+  max-width: 1080px;
+  transition: opacity 0.5s;
+
+  &:not(.visible) {
+    opacity: 0;
+  }
+
+  &.visible {
+    opactity: 1;
+  }
 }
 
 .sticky-header {
@@ -146,10 +128,7 @@ code {
 .divider-what {
   position: sticky;
   top: 0;
-  margin-top: 50vh;
-  margin-bottom: calc(50vh);
   z-index: 1;
-  min-height: 50px;
   transition: font-size 0.1s;
 
   &.passed {
@@ -163,17 +142,11 @@ code {
     font-size: inherit;
   }
 
-  .content {
-    // display: flex;
-    // justify-content: center;
-    // align-items: center;
-
-    .period {
-      animation: comeIn 0s 4s step-end both;
-      @keyframes comeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
+  .period {
+    animation: comeIn 0s 4s step-end both;
+    @keyframes comeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   }
 }
