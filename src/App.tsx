@@ -9,6 +9,10 @@ interface IAppState {
   what?: string;
   whys: string[];
   pasts: string[];
+  instead?: string;
+  ultimateCost?: string;
+  badFeelings?: string;
+  goodFeelings: string[];
 }
 
 class App extends PureComponent<{}, IAppState> {
@@ -16,47 +20,55 @@ class App extends PureComponent<{}, IAppState> {
     what: undefined,
     whys: [],
     pasts: [],
+    instead: undefined,
+    ultimateCost: undefined,
+    badFeelings: undefined,
+    goodFeelings: [],
   };
 
-  handleEntryWhat = (what: string) => {
-    this.setState({ what });
-    const firstWhyInput = document.querySelector("#why-0") as HTMLElement;
-    firstWhyInput.focus();
+  focusNextInput(selector: string) {
+    const nextInput = document.querySelector(selector) as HTMLElement;
+    nextInput.focus();
   }
 
-  handleEntryWhy = (why: string, entry: Entry) => {
-    const index = entry.props.index!;
-    const whys = this.state.whys.slice(); 
-    whys[index] = why;
-    this.setState({
-      whys,
-    }, () => console.log(this.state));
-    const nextWhyEntry = document.querySelector(`#why-${index + 1}`) as HTMLElement;
-    if (nextWhyEntry) {
-      nextWhyEntry.focus();
-    } else {
-      // we're past the why's, move onto the next section
-      const firstPastEntry = document.querySelector("#past-0") as HTMLElement;
-      firstPastEntry.focus();
+  makeSingleEntryHandler(propName: keyof IAppState, nextInputSelector: string) {
+    return (val: string) => {
+      this.setState({ [propName]: val } as any);
+      this.focusNextInput(nextInputSelector);
     }
   }
 
-  handleEntryPast = (past: string, entry: Entry) => {
-    const index = entry.props.index!;
-    const pasts = this.state.pasts.slice(); 
-    pasts[index] = past;
-    this.setState({
-      pasts,
-    }, () => console.log(this.state));
-    const nextWhyPast = document.querySelector(`#past-${index + 1}`) as HTMLElement;
-    if (nextWhyPast) {
-      nextWhyPast.focus();
-    } else {
-      // we're past the past, move onto the next section
-      const insteadEntry = document.querySelector("#instead") as HTMLElement;
-      insteadEntry.focus();
+  makeMultiEntryHandler(propName: keyof IAppState, entriesPrefix: string, nextInputSelector?: string) {
+    return (why: string, entry: Entry) => {
+      const index = entry.props.index!;
+      const entries = (this.state[propName]! as string[]).slice();
+      entries[index] = why;
+      this.setState({
+        [propName]: entries,
+      } as any, () => console.log(this.state));
+      const nextEntry = document.querySelector(`${entriesPrefix}${index + 1}`) as HTMLElement;
+      if (nextEntry) {
+        nextEntry.focus();
+      } else if (nextInputSelector) {
+        // we're past the entries, move onto the next section
+        this.focusNextInput(nextInputSelector);
+      }
     }
   }
+
+
+  handleEntryWhat = this.makeSingleEntryHandler("what", "#why-0");
+
+  handleEntryWhy = this.makeMultiEntryHandler("whys", "#why-", "#past-0");
+
+  handleEntryPast = this.makeMultiEntryHandler("pasts", "#past-", "#instead");
+
+  handleEntryInstead = this.makeSingleEntryHandler("instead", "#ultimate-cost");
+
+  handleEntryUltimateCost = this.makeSingleEntryHandler("ultimateCost", "#bad-feelings")
+
+  handleEntryBadFeelings = this.makeSingleEntryHandler("badFeelings", "#good-feeling-0");
+  handleEntryGoodFeeling = this.makeMultiEntryHandler("goodFeelings", "#good-feeling-");
 
   render() {
     return (
@@ -94,26 +106,26 @@ class App extends PureComponent<{}, IAppState> {
           </Divider>
 
           <Divider page={4} visible={this.state.pasts.length >= 5}>
-            By putting it off, I've instead been gaining pleasure from <Entry id="instead" />.
+            By putting it off, I've instead been gaining pleasure from <Entry id="instead" onEntry={this.handleEntryInstead} />.
           </Divider>
 
-          <Divider page={5}>
-            If I keep putting it off, it will cost me <div className="entry" contentEditable={true}></div>, and I'll feel <div className="entry" contentEditable={true}></div>.
+          <Divider page={5} visible={this.state.instead != null}>
+            Ultimately, if I keep putting it off, it will cost me <Entry id="ultimate-cost" onEntry={this.handleEntryUltimateCost} />, and I'll feel <Entry id="bad-feelings" onEntry={this.handleEntryBadFeelings} />.
           </Divider>
 
-          <Divider page={6}>
+          <Divider page={6} visible={this.state.badFeelings != null}>
             But if I buckle down and really do it, I'll feel these positive emotions:
             <ol>
-              <li><div className="entry" contentEditable={true} id="past-painful"></div>,</li>
-              <li><div className="entry" contentEditable={true} id="past-painful"></div>,</li>
-              <li><div className="entry" contentEditable={true} id="past-painful"></div>,</li>
-              <li><div className="entry" contentEditable={true} id="past-painful"></div>,</li>
-              <li><div className="entry" contentEditable={true} id="past-painful"></div>,</li>
-              <li><div className="entry" contentEditable={true} id="past-painful"></div>,</li>
-              <li><div className="entry" contentEditable={true} id="past-painful"></div>,</li>
-              <li><div className="entry" contentEditable={true} id="past-painful"></div>,</li>
-              <li><div className="entry" contentEditable={true} id="past-painful"></div>, and finally,</li>
-              <li><div className="entry" contentEditable={true} id="past-painful"></div>.</li>
+              <li><Entry index={0} id="good-feeling-0" onEntry={this.handleEntryGoodFeeling} />,</li>
+              <li><Entry index={1} id="good-feeling-1" onEntry={this.handleEntryGoodFeeling} />,</li>
+              <li><Entry index={2} id="good-feeling-2" onEntry={this.handleEntryGoodFeeling} />,</li>
+              <li><Entry index={3} id="good-feeling-3" onEntry={this.handleEntryGoodFeeling} />,</li>
+              <li><Entry index={4} id="good-feeling-4" onEntry={this.handleEntryGoodFeeling} />,</li>
+              <li><Entry index={5} id="good-feeling-5" onEntry={this.handleEntryGoodFeeling} />,</li>
+              <li><Entry index={6} id="good-feeling-6" onEntry={this.handleEntryGoodFeeling} />,</li>
+              <li><Entry index={7} id="good-feeling-7" onEntry={this.handleEntryGoodFeeling} />,</li>
+              <li><Entry index={8} id="good-feeling-8" onEntry={this.handleEntryGoodFeeling} />, and finally,</li>
+              <li><Entry index={9} id="good-feeling-9" onEntry={this.handleEntryGoodFeeling} />.</li>
             </ol>
           </Divider>
         </div>
