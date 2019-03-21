@@ -6,6 +6,7 @@ import { Divider } from './divider';
 import { Entry } from './entry';
 
 interface IAppState {
+  isWhatVisible: boolean;
   what?: string;
   whys: string[];
   pasts: string[];
@@ -17,6 +18,7 @@ interface IAppState {
 
 class App extends PureComponent<{}, IAppState> {
   state: IAppState  = {
+    isWhatVisible: false,
     what: undefined,
     whys: [],
     pasts: [],
@@ -33,8 +35,9 @@ class App extends PureComponent<{}, IAppState> {
 
   makeSingleEntryHandler(propName: keyof IAppState, nextInputSelector: string) {
     return (val: string) => {
-      this.setState({ [propName]: val } as any);
-      this.focusNextInput(nextInputSelector);
+      this.setState({ [propName]: val } as any, () => {
+        this.focusNextInput(nextInputSelector);
+      });
     }
   }
 
@@ -45,14 +48,15 @@ class App extends PureComponent<{}, IAppState> {
       entries[index] = why;
       this.setState({
         [propName]: entries,
-      } as any, () => console.log(this.state));
-      const nextEntry = document.querySelector(`${entriesPrefix}${index + 1}`) as HTMLElement;
-      if (nextEntry) {
-        nextEntry.focus();
-      } else if (nextInputSelector) {
-        // we're past the entries, move onto the next section
-        this.focusNextInput(nextInputSelector);
-      }
+      } as any, () => {
+        const nextEntry = document.querySelector(`${entriesPrefix}${index + 1}`) as HTMLElement;
+        if (nextEntry) {
+          nextEntry.focus();
+        } else if (nextInputSelector) {
+          // we're past the entries, move onto the next section
+          this.focusNextInput(nextInputSelector);
+        }
+      });
     }
   }
 
@@ -70,15 +74,23 @@ class App extends PureComponent<{}, IAppState> {
   handleEntryBadFeelings = this.makeSingleEntryHandler("badFeelings", "#good-feeling-0");
   handleEntryGoodFeeling = this.makeMultiEntryHandler("goodFeelings", "#good-feeling-");
 
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({
+        isWhatVisible: true
+      });
+    }, 5000);
+  }
+
   render() {
     return (
       <div id="app">
         <div className="form">
           <Divider className="divider-intro" page={0} visible={true}>
-            Use this five minute motivational exercise to get excited about doing that thing you've been putting off!
+            <TypewriterText duration={3}>Use this five minute motivational exercise to get excited about doing that thing you've been putting off!</TypewriterText>
           </Divider>
 
-          <Divider className="divider-what" page={1} visible={true}>
+          <Divider className="divider-what" page={1} visible={this.state.isWhatVisible}>
             I have been putting off <Entry focusDelay={500} id="what" onEntry={this.handleEntryWhat} /><span className="period">.</span>
             <EnterListener style={{marginTop: "2em"}} page={1} to={2} />
           </Divider>
@@ -106,7 +118,7 @@ class App extends PureComponent<{}, IAppState> {
           </Divider>
 
           <Divider page={4} visible={this.state.pasts.length >= 5}>
-            By putting it off, I've instead been gaining pleasure from <Entry id="instead" onEntry={this.handleEntryInstead} />.
+            Instead, I've been gaining pleasure from <Entry id="instead" onEntry={this.handleEntryInstead} />.
           </Divider>
 
           <Divider page={5} visible={this.state.instead != null}>

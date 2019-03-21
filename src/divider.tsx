@@ -58,7 +58,7 @@ export class Divider extends React.Component<{
     });
     return (
       <div ref={this.handleDividerRef} className={classNames} onClick={this.handleClick}>
-        {this.props.children}
+        {this.props.visible ? this.props.children : null}
       </div>
     );
   }

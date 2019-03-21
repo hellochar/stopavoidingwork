@@ -1,4 +1,6 @@
 $text-color: white;
+$text-secondary-color: #808080;
+$background-color: #20262e;
 
 * {
   box-sizing: border-box;
@@ -10,29 +12,32 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   // background-image: url('/400-90-5.png');
-  background: #20262e;
-  // font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
-  font-family: Arial, Helvetica, sans-serif;
+  background: $background-color;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 18px;
   color: $text-color;
-
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+ol {
+  // margin-block-start: 0;
+  // margin-block-end: 0;
 }
 
-#app {
-  border-radius: 4px;
-  transition: all 0.2s;
-  overflow: visible;
-}
+.divider-intro {
+  animation: fadeTextAndGoUp 1s 4s both;
 
-.intro {
-  display: inline-block;
-  margin: 0;
-  max-width: 370px;
+  @keyframes fadeTextAndGoUp {
+    from {
+      color: $text-color;
+      // top: 50vh;
+      // transform: translateY(-50%);
+    }
+    to {
+      // top: 0;
+      // transform: translateY(0);
+      color: $text-secondary-color;
+    }
+  }
 }
 
 .form {
@@ -118,11 +123,13 @@ code {
 
   &:not(.visible) {
     opacity: 0;
+    height: 0;
     top: 20px;
   }
 
   &.visible {
     opacity: 1;
+    height: auto;
     top: 0;
   }
 }
@@ -135,22 +142,10 @@ code {
 .divider-what {
   position: sticky;
   top: 0;
-  z-index: 1;
-  transition: font-size 0.1s;
-
-  &.passed {
-    font-size: 18px;
-    border-bottom: 1px solid $text-color;
-    background: white;
-    height: auto;
-  }
-
-  &.active {
-    font-size: inherit;
-  }
+  background: $background-color;
 
   .period {
-    animation: comeIn 0s 4s step-end both;
+    animation: comeIn 0s 2s step-end both;
     @keyframes comeIn {
       from { opacity: 0; }
       to { opacity: 1; }
