@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import classnames from 'classnames';
 export class TypewriterText extends PureComponent<{
   duration: number;
+  delay?: number;
   children: string;
 } & React.HTMLProps<HTMLSpanElement>, {}> {
   state = {
@@ -14,7 +15,7 @@ export class TypewriterText extends PureComponent<{
   componentDidMount() {
     const startTime = performance.now();
     this.intervalId = setInterval(() => {
-      const elapsed = performance.now() - startTime;
+      const elapsed = Math.max(0, performance.now() - (this.props.delay || 0) - startTime);
       const lettersPerSecond = this.props.children.length / this.props.duration;
       const length = Math.floor(elapsed / 1000 * lettersPerSecond);
       const currentText = this.props.children.substr(0, length);

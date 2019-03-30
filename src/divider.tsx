@@ -1,38 +1,18 @@
 import React from 'react';
 import classnames from 'classnames';
-import { isPageActive } from './page';
 
 interface IDividerProps {
   className?: string;
   page: number;
   visible?: boolean;
   scrollTo?: boolean;
-
-  secondary?: boolean;
+  lazyRenderChildren?: boolean;
 }
 
-export class Divider extends React.Component<IDividerProps, {
-  isLoaded: boolean;
-  isActive: boolean;
-}> {
+export class Divider extends React.Component<IDividerProps, {}> {
   constructor(props: any) {
     super(props);
-    this.state = {
-      isLoaded: this.shouldLoad(),
-      isActive: isPageActive(this.props.page),
-    };
   }
-  shouldLoad() {
-    return window.scrollY / window.innerHeight > this.props.page - 0.05;
-  }
-  handleScroll = (evt: UIEvent) => {
-    if (this.shouldLoad() && !this.state.isLoaded) {
-      this.setState({ isLoaded: true });
-    }
-    this.setState({
-      isActive: isPageActive(this.props.page),
-    });
-  };
   private dividerRef: HTMLDivElement | null = null;
   handleDividerRef = (ref: HTMLDivElement | null) => {
     this.dividerRef = ref;
@@ -49,12 +29,6 @@ export class Divider extends React.Component<IDividerProps, {
       // }
     }
   };
-  componentDidMount() {
-    window.addEventListener("scroll", this.handleScroll);
-  }
-  componentWillUnmount() {
-    window.removeEventListener("scroll", this.handleScroll);
-  }
 
   componentDidUpdate(prevProps: IDividerProps) {
     if (!prevProps.visible && this.props.visible && this.props.scrollTo) {
@@ -67,14 +41,11 @@ export class Divider extends React.Component<IDividerProps, {
 
   render() {
     const classNames = classnames("divider", this.props.className, {
-      "active": this.state.isActive,
-      "passed": !this.state.isActive && this.shouldLoad(),
       "visible": this.props.visible,
-      "secondary": this.props.secondary,
     });
     return (
       <div ref={this.handleDividerRef} className={classNames} onClick={this.handleClick}>
-        {this.props.children}
+        {this.props.visible || !this.props.lazyRenderChildren ? this.props.children : null}
       </div>
     );
   }

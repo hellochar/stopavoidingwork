@@ -1,4 +1,4 @@
-@import './sharing_icons';
+@import './shareButton';
 
 $text-color: white;
 $text-secondary-color: #808080;
@@ -22,16 +22,6 @@ body {
 a {
   color: inherit;
   font-weight: bold;
-}
-
-.print {
-  border: 1px solid;
-  border-radius: 4px;
-  background: none;
-  color: inherit;
-  font-size: inherit;
-  padding: 10px 20px;
-  
 }
 
 .divider-intro {
@@ -153,22 +143,6 @@ a {
   }
 }
 
-.divider-finished {
-  text-align: center;
-  color: $text-color;
-  margin-top: 0;
-
-  .motivation {
-    font-size: 2em;
-    margin: 2em 0;
-  }
-}
-
-.sticky-header {
-  position: sticky;
-  top: 0;
-}
-
 .divider-what {
   .period {
     animation: comeIn 0s 5.25s step-end both;
@@ -179,9 +153,84 @@ a {
   }
 }
 
+.divider-finished {
+  color: $text-color;
+  margin-top: 0;
+
+  &.visible {
+    margin-bottom: 25vh;
+  }
+
+  .details {
+    animation: fadeIn 0.5s 4s both;
+    @keyframes fadeIn {
+      from { opacity: 0; top: 20px; }
+      to { opacity: 1; top: 0; }
+    }
+  }
+
+  .sharing {
+    display: inline-block;
+  }
+
+  .motivation {
+    font-size: 3em;
+    margin: 2em 0 0;
+    display: inline-block;
+  }
+
+  .buttons {
+    margin: 6em 0;
+    display: flex;
+    justify-content: center;
+
+    .button {
+      border: 1px solid;
+      border-radius: 4px;
+      background: none;
+      color: inherit;
+      font-size: inherit;
+      padding: 10px 20px;
+      cursor: pointer;
+      margin: 20px;
+      height: 50px;
+    }
+
+    .print {
+      transition: box-shadow 0.1s, top 0.1s, left 0.1s;
+      position: relative;
+      top: 0;
+      left: 0;
+
+      &:hover {
+        top: -2px;
+        left: -2px;
+        box-shadow: 2px 2px 2px;
+      }
+
+      &:active {
+        top: 0;
+        left: 0;
+        box-shadow: 0 0 2px;
+      }
+    }
+  }
+}
+
+.secondary {
+  color: $text-secondary-color;
+}
 
 @media print {
   .noprint {
     display: none !important;
+  }
+}
+
+@media (max-width: 992px) {
+  .divider-finished {
+    .motivation {
+      font-size: 2em;
+    }
   }
 }

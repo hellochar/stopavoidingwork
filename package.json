@@ -12,6 +12,7 @@
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-scripts": "2.1.8",
+    "react-tiny-popover": "^3.4.2",
     "scrollmagic": "^2.0.6",
     "typescript": "^3.3.3333"
   },
