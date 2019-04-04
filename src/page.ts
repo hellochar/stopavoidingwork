@@ -1,4 +1,4 @@
-import { isInRange } from "./math";
+import { isInRange } from "./util";
 
 export function scrollToPage(page: number) {
   const top = window.innerHeight * page;
