@@ -4,7 +4,6 @@ import { TypewriterText } from './typewriterText';
 import { Divider } from './divider';
 import { Entry } from './entry';
 import { ShareButton } from './shareButton';
-import { EnterListener } from './enterListener';
 
 interface IAppState {
   isWhatVisible: boolean;
@@ -88,8 +87,8 @@ class App extends PureComponent<{}, IAppState> {
           <TypewriterText duration={3}>Use this five minute motivational exercise to get excited about doing that thing you've been putting off!</TypewriterText>
         </Divider>
 
-        <Divider className="divider-what" page={1} visible={this.state.isWhatVisible}>
-          I have been putting off <Entry focusDelay={500} id="what" onEntry={this.handleEntryWhat} /><span className="period">.</span>
+        <Divider className="divider-what" page={1} visible={this.state.isWhatVisible} lazyRenderChildren={true}>
+          I have been putting off <Entry focusDelay={1000} id="what" onEntry={this.handleEntryWhat} /><span className="period">.</span>
         </Divider>
 
         <Divider page={2} visible={this.state.what != null}>
@@ -129,8 +128,8 @@ class App extends PureComponent<{}, IAppState> {
         </Divider>
 
         <Divider page={7} visible={this.state.goodFeelings.length >= 5}>
-          Over the long term, making a habit of doing things like this will make me feel
-            <Entry index={0} id="habit-feeling-0" onEntry={this.handleEntryHabitFeeling} />
+          Over the long term, making a habit of doing things like this will make me feel <Entry
+              index={0} id="habit-feeling-0" onEntry={this.handleEntryHabitFeeling} />
           , <Entry index={1} id="habit-feeling-1" onEntry={this.handleEntryHabitFeeling} />
           , <Entry index={2} id="habit-feeling-2" onEntry={this.handleEntryHabitFeeling} />
           , <Entry index={3} id="habit-feeling-3" onEntry={this.handleEntryHabitFeeling} />
