@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
-import { scrollToPage } from './page';
 import classnames from 'classnames';
 import { TypewriterText } from './typewriterText';
 import { Divider } from './divider';
 import { Entry } from './entry';
 import { ShareButton } from './shareButton';
+import { EnterListener } from './enterListener';
 
 interface IAppState {
   isWhatVisible: boolean;
@@ -146,14 +146,12 @@ class App extends PureComponent<{}, IAppState> {
             scrollTo={true}
             lazyRenderChildren={true}
         >
-          {/* <p className="motivation">Now get out there and crush it!</p> */}
           <TypewriterText delay={1} duration={3} className="motivation">Amazing! Now get out there and crush it!</TypewriterText>
           <div className="details">
             <div className="buttons">
               <button className="button print" onClick={() => window.print()}>🖨 Print</button>
               <ShareButton />
             </div>
-            {/* { this.renderSharingButtons() } */}
             <p className="footnote">Made by <a href="http://www.hellochar.com" target="_blank">Xiaohan Zhang</a>. <span className="secondary">Based off an exercise in Awaken the Giant Within, Ch. 3 by Tony Robbins.</span></p>
           </div>
         </Divider>

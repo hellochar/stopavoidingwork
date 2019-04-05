@@ -21,12 +21,6 @@ export class Divider extends React.Component<IDividerProps, {}> {
     if (this.dividerRef != null && evt.target === this.dividerRef) {
       const inputs = Array.from(this.dividerRef.querySelectorAll("input").values());
       inputs[0] && inputs[0].focus();
-      // for (const inputElement of inputs) {
-      //   // find first empty input
-      //   if (inputElement.value.length === 0) {
-      //     break;
-      //   }
-      // }
     }
   };
 
