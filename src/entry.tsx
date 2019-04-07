@@ -100,6 +100,7 @@ export class Entry extends PureComponent<{
     return <span
         {...this.props}
         contentEditable={true}
+        autoCapitalize="off"
         className={classnames("entry", this.props.className)}
         onKeyPress={this.handleKeyPress}
         onFocus={this.handleFocus}
