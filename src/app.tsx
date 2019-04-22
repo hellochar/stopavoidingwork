@@ -6,7 +6,7 @@ import { Entry } from './entry';
 import { ShareButton } from './shareButton';
 
 interface IAppState {
-  isWhatVisible: boolean;
+  shouldShowWhy?: boolean;
   what?: string;
   whys: string[];
   pasts: string[];
@@ -19,7 +19,7 @@ interface IAppState {
 
 class App extends PureComponent<{}, IAppState> {
   state: IAppState  = {
-    isWhatVisible: false,
+    shouldShowWhy: false,
     what: undefined,
     whys: [],
     pasts: [],
@@ -34,9 +34,9 @@ class App extends PureComponent<{}, IAppState> {
     return this.state.habitFeelings.length >= 6;
   }
 
-  makeSingleEntryHandler(propName: keyof IAppState) {
+  makeSingleEntryHandler(propName: keyof IAppState, callback?: () => void) {
     return (val: string) => {
-      this.setState({ [propName]: val } as any);
+      this.setState({ [propName]: val } as any, callback);
     }
   }
 
@@ -55,7 +55,9 @@ class App extends PureComponent<{}, IAppState> {
   }
 
 
-  handleEntryWhat = this.makeSingleEntryHandler("what");
+  handleEntryWhat = this.makeSingleEntryHandler("what", () => {
+    setTimeout(() => this.setState({ shouldShowWhy: true}), 1000);
+  });
 
   handleEntryWhy = this.makeMultiEntryHandler("whys");
 
@@ -71,27 +73,18 @@ class App extends PureComponent<{}, IAppState> {
 
   handleEntryHabitFeeling = this.makeMultiEntryHandler("habitFeelings");
 
-  componentDidMount() {
-    setTimeout(() => {
-      this.setState({
-        isWhatVisible: true
-      });
-    }, 5000);
-  }
-
   render() {
     const formClassName = classnames("form", { "finished": this.isFinished });
+    const whatClassName = classnames("divider-what", {
+      "empty": this.state.what == null
+    });
     return (
       <div className={formClassName}>
-        <Divider className="divider-intro noprint" page={0} visible={true}>
-          <TypewriterText duration={3}>Use this five minute motivational exercise to get excited about doing that thing you've been putting off!</TypewriterText>
+        <Divider className={whatClassName} page={1} visible={true}>
+          I have been putting off <Entry focusDelay={0} id="what" onEntry={this.handleEntryWhat} /><span className="period">.</span>
         </Divider>
 
-        <Divider className="divider-what" page={1} visible={this.state.isWhatVisible} lazyRenderChildren={true}>
-          I have been putting off <Entry focusDelay={1000} id="what" onEntry={this.handleEntryWhat} /><span className="period">.</span>
-        </Divider>
-
-        <Divider page={2} visible={this.state.what != null}>
+        <Divider page={2} visible={this.state.shouldShowWhy}>
           I haven't done this yet because <Entry
             index={0} id="why-0" onEntry={this.handleEntryWhy} />
           , <Entry index={1} id="why-1" onEntry={this.handleEntryWhy} />
